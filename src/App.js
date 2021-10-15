@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import './styles.css';
+import AllTheThings from './Components/AllTheThings';
+import MyShoppingCart from './Components/MyShoppingCart';
+import AddItemForm from './Components/AddItemForm';
+import productsArr from './products';
 
-function App() {
+export default function App() {
+  const [products, setProducts] = useState(productsArr);
+  const [cart, setCart] = useState([]);
+
+  const addToCart = item => {
+    setCart([...cart, item])
+  };
+
+  const addToProducts = newProduct => {
+    setProducts([newProduct, ...products])
+  }
+
+  const removeFromCart = index => {
+    const cartArr = cart.filter((d, i) => i !== index)
+    setCart(cartArr)
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Big Time Shopping</h1>
+      <AddItemForm handleSubmit={addToProducts} />
+      <div className="items">
+        <div className="AllTheThings">
+          <AllTheThings products={products} handleClick={addToCart} />
+        </div>
+        <MyShoppingCart cart={cart} handleClick={removeFromCart} />
+      </div>
     </div>
   );
 }
-
-export default App;
