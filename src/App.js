@@ -43,6 +43,7 @@ export default function App() {
   return (
     <div className="App">
       <h1>Big Time Shopping</h1>
+      <h4>Now using reducers</h4>
       <AddItemForm handleSubmit={productDispatch} />
       <div className="items">
         <div className="AllTheThings">
