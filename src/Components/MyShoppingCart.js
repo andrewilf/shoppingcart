@@ -4,7 +4,7 @@ function MyShoppingCart(props) {
   //console.log("this is props  from MyShoppingCart", props)
   let things = props.cart.map((d, i) => {
     return (
-      <li key={i} onClick={() => props.handleClick(i)}>
+      <li key={i} onClick={() => props.handleClick({ type: "REMOVE", value: i})}>
         {d.name} {d.price}
       </li>
     );

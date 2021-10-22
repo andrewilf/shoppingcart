@@ -6,7 +6,7 @@ function AllTheThings(props) {
 
   let things = props.products.map((d, i) => {
     return (
-      <li key={i} onClick={() => props.handleClick(d)}>
+      <li key={i} onClick={() => props.handleClick({ type: "ADD", value: d})}>
         {d.name} - ${d.price}
         <br />
         {d.description}

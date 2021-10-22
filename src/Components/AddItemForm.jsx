@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useReducer } from 'react'
 
 //regular expression
 function validateName(name) {
@@ -26,6 +26,22 @@ export default function AddItemForm(props) {
     const [isPriceValid, setIsPriceValid] = useState(true)
     const [isDescValid, setIsDescValid] = useState(true)
 
+    const itemReducer = () => {
+        
+    }
+
+
+
+    const [item, dispatchItem] = useReducer(itemReducer, {
+        name: "name",
+        nameValid: true,
+        price: "price in $",
+        priceValid: true,
+        desc: "item description",
+        descValid: true
+    })
+    //const [valid, dispatchValid] = useReducer()
+
     const handleSubmit = () => {
         console.log("sent submit")
         let priceString = price
@@ -33,7 +49,8 @@ export default function AddItemForm(props) {
         // if (priceString.search(/./) === -1) {
         //     priceString += ".00"
         // } 
-        if (isNameValid && validatePrice(price) && isDescValid) {
+        if ((isNameValid && validatePrice(price) && isDescValid)) {
+            console.log("submitted")
             props.handleSubmit({
                 name: name,
                 price: priceString,
@@ -72,10 +89,7 @@ export default function AddItemForm(props) {
             {isDescValid ? <input name="description" value={desc || ''} type='text' onChange={handleDescChange} /> :
                 <input name="description" className="invalidField" value={desc || ''} type='text' onChange={handleDescChange} />
             }
-            {isNameValid && isPriceValid && isDescValid ?
-                <input type='submit' onClick={handleSubmit} /> :
-                <input type='submit' disabled={true} value={"invalid" || ''} />
-            }
+                <input type='submit' onClick = {handleSubmit} disabled={!(isNameValid && isPriceValid && isDescValid)} />
 
         </div>
     )
