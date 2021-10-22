@@ -1,4 +1,4 @@
-import { useState, useReducer } from 'react'
+import { useReducer } from 'react'
 
 //regular expression
 function validateName(name) {
@@ -8,7 +8,6 @@ function validateName(name) {
 
 function validatePrice(enteredPrice) {
     const re = /^\d{0,8}(\.\d{1,4})?$/
-    console.log(re.test(String(enteredPrice)))
     return re.test(String(enteredPrice))
 }
 
@@ -18,21 +17,34 @@ function validateDesc(desc) {
 }
 
 export default function AddItemForm(props) {
-    const [name, setName] = useState("name")
-    const [price, setPrice] = useState("price in $")
-    const [desc, setDesc] = useState("item description")
 
-    const [isNameValid, setIsNameValid] = useState(true)
-    const [isPriceValid, setIsPriceValid] = useState(true)
-    const [isDescValid, setIsDescValid] = useState(true)
-
-    const itemReducer = () => {
-        
+    const itemReducer = (state, action) => {
+        switch (action.type) {
+            case "NAME":
+                return {
+                    ...state,
+                    name: action.value,
+                    nameValid: validateName(action.value)
+                }
+            case "PRICE":
+                return {
+                    ...state,
+                    price: action.value,
+                    priceValid: validatePrice(action.value)
+                }
+            case "DESC":
+                return {
+                    ...state,
+                    desc: action.value,
+                    descValid: validateDesc(action.value)
+                }
+            default:
+                return state
+        }
     }
 
 
-
-    const [item, dispatchItem] = useReducer(itemReducer, {
+    const [entry, dispatchItem] = useReducer(itemReducer, {
         name: "name",
         nameValid: true,
         price: "price in $",
@@ -44,52 +56,48 @@ export default function AddItemForm(props) {
 
     const handleSubmit = () => {
         console.log("sent submit")
-        let priceString = price
-        // console.log(priceString.search("/."))
-        // if (priceString.search(/./) === -1) {
-        //     priceString += ".00"
-        // } 
-        if ((isNameValid && validatePrice(price) && isDescValid)) {
-            console.log("submitted")
+        dispatchItem({ type: "NAME", value: entry.name })
+        dispatchItem({ type: "PRICE", value: entry.price })
+        dispatchItem({ type: "DESC", value: entry.desc })
+        if ((validateName(entry.name) && validatePrice(entry.price) && validateDesc(entry.desc))) {
             props.handleSubmit({
-                name: name,
-                price: priceString,
-                description: desc
+                type: "ADD", value: {
+                    name: entry.name,
+                    price: entry.price,
+                    description: entry.desc
+                }
             })
         }
-        
     }
 
     const handleNameChange = (event) => {
-        setName(event.target.value)
-        setIsNameValid(validateName(event.target.value))
+        dispatchItem({ type: "NAME", value: event.target.value })
+        //setName(event.target.value)
+        //setIsNameValid(validateName(event.target.value))
     }
 
     const handlePriceChange = (event) => {
-        let priceString = event.target.value
-        setPrice(priceString)
-        setIsPriceValid(validatePrice(priceString))
+        dispatchItem({ type: "PRICE", value: event.target.value })
 
     }
 
     const handleDescChange = (event) => {
-        setDesc(event.target.value)
-        setIsDescValid(validateDesc(event.target.value))
+        dispatchItem({ type: "DESC", value: event.target.value })
     }
 
 
     return (
         <div className="form">
-            {isNameValid ? <input name="itemName" value={name || ''} type='text' onChange={handleNameChange} /> :
-                <input name="itemName" className="invalidField" value={name || ''} type='text' onChange={handleNameChange} />
+            {entry.nameValid ? <input name="itemName" value={entry.name || ''} type='text' onChange={handleNameChange} /> :
+                <input name="itemName" className="invalidField" value={entry.name || ''} type='text' onChange={handleNameChange} />
             }
-            {isPriceValid ? <input name="price" value={price || ''} type='text' onChange={handlePriceChange} /> :
-                <input name="price" className="invalidField" value={price || ''} type='text' onChange={handlePriceChange} />
+            {entry.priceValid ? <input name="price" value={entry.price || ''} type='text' onChange={handlePriceChange} /> :
+                <input name="price" className="invalidField" value={entry.price || ''} type='text' onChange={handlePriceChange} />
             }
-            {isDescValid ? <input name="description" value={desc || ''} type='text' onChange={handleDescChange} /> :
-                <input name="description" className="invalidField" value={desc || ''} type='text' onChange={handleDescChange} />
+            {entry.descValid ? <input name="description" value={entry.desc || ''} type='text' onChange={handleDescChange} /> :
+                <input name="description" className="invalidField" value={entry.desc || ''} type='text' onChange={handleDescChange} />
             }
-                <input type='submit' onClick = {handleSubmit} disabled={!(isNameValid && isPriceValid && isDescValid)} />
+            <input type='submit' onClick={handleSubmit} disabled={!(entry.nameValid && entry.priceValid && entry.descValid)} />
 
         </div>
     )

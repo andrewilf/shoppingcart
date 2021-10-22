@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import './styles.css';
 import AllTheThings from './Components/AllTheThings';
 import MyShoppingCart from './Components/MyShoppingCart';
@@ -6,7 +6,15 @@ import AddItemForm from './Components/AddItemForm';
 import productsArr from './products';
 
 export default function App() {
-  const [products, setProducts] = useState(productsArr);
+  
+  const addProduct = (state, action) => {
+    switch (action.type) {
+      case "ADD":
+        return ([action.value, ...state])
+      default:
+        return state
+    }
+  }
 
   const changeCart = (state, action) => {
     switch (action.type) {
@@ -22,18 +30,20 @@ export default function App() {
     }
   }
 
+  const [products, productDispatch] = useReducer(addProduct, productsArr);
   const [shoppingCart, cartDispatch] = useReducer(changeCart, [])
 
 
 
-  const addToProducts = newProduct => {
-    setProducts([newProduct, ...products])
-  }
+  // const addToProducts = newProduct => {
+  //   setProducts([newProduct, ...products])
+
+  // }
 
   return (
     <div className="App">
       <h1>Big Time Shopping</h1>
-      <AddItemForm handleSubmit={addToProducts} />
+      <AddItemForm handleSubmit={productDispatch} />
       <div className="items">
         <div className="AllTheThings">
           <AllTheThings products={products} handleClick={cartDispatch}
